@@ -5,7 +5,10 @@ import {
   StyleSheet, 
   Text, 
   View,
-  FlatList, 
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard, 
 } from 'react-native';
 
 import {Ionicons, MaterialIcons} from "@expo/vector-icons"
@@ -21,19 +24,46 @@ export default function App() {
   const [task, setTask] = useState(['alisson' , 'renam', 'macedo']);
   const [newTask, setNewTask] = useState('');
 
+async function addTask(){
+
+  setTask([ ... task , newTask]);
+  setNewTask("");
+
+  Keyboard.dismiss();
+}
+
+{/*
+useEffect(() => {
+  console.log(newTask);
+}, [newTask]);
+*/}
+
   return (
 
     <>
+      <KeyboardAvoidingView
+        keyboardVerticalOffset={0}
+        behavior="padding"
+        style={{flex: 1}}
+        enabled={Platform.OS === 'ios'}
+      >
       <View style={styles.container}>
         
         <View style={styles.Body}>
           
           <FlatList 
-          style={styles.FlatList}
-          data={task}
-          keyExtractor={item => item.toString()}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) =>  <Text >{item}</Text>}
+            style={styles.FlatList}
+            data={task}
+            keyExtractor={item => item.toString()}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) =>  (
+              <View style={styles.ContainerView}>
+                <Text style={styles.Texto}>{item}</Text>
+                <TouchableOpacity>
+                    <MaterialIcons name="delete-forever" size={25} color="#f64c75" />
+                </TouchableOpacity>
+              </View>
+            )}
           />  
           
           <StatusBar  backgroundColor= '#050025' style="light"  />  
@@ -47,15 +77,17 @@ export default function App() {
           autoCorrect={true}
           placeholder="Adicione uma tarefa"
           maxLength={25}
+          onChangeText={text => setNewTask(text)}
+          value={newTask}
           />
 
-          <TouchableOpacity style={styles.Button}>
+          <TouchableOpacity style={styles.Button} onPress={() => addTask()}>
             <Ionicons name="add" size={25} color="#FFF" />
           </TouchableOpacity>
 
         </View>
       </View>
-
+      </KeyboardAvoidingView>
     </>
 
 
@@ -67,15 +99,13 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050025',
+    backgroundColor: '#EEE8AA',
     paddingHorizontal: 20,
     paddingVertical: 20,
     marginTop: 20,
  
   },
-    text: {
-      color: '#fff',
-    },
+    
     Body: {
       flex: 1,
     },
@@ -88,13 +118,13 @@ const styles = StyleSheet.create({
       paddingTop: 13,
       borderTopWidth: 1,
       borderColor: '#eee',
-      backgroundColor: '#777',
+      backgroundColor: '#EEE8AA',
 
     },
     Input: {
       flex: 1,
       height: 40,
-      backgroundColor: '#eee',
+      backgroundColor: '#FFF',
       borderRadius: 4,
       paddingVertical: 5,
       paddingHorizontal: 10,
@@ -115,5 +145,25 @@ const styles = StyleSheet.create({
       marginTop: 1,
       
     },
+    ContainerView:{
+      marginBottom: 15,
+      padding: 15,
+      borderRadius: 4,
+      backgroundColor: "#F8F8FF",
 
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderWidth: 1,
+      borderColor: "#eee"
+    },
+    Texto: {
+      fontSize: 14,
+      color: '#333',
+      fontWeight: "bold",
+      marginTop: 4,
+      textAlign: "center",
+    }
+    
 });
